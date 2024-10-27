@@ -1,31 +1,27 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Keyboard,
-  View,
-  TextInput,
-  TouchableOpacity,
   Text,
-  Image,
-  ImageBackground,
+  View,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
+  TextInput,
+  ImageBackground,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 
 import Button from "../components/Button";
 import AuthTextLink from "../components/AuthTextLink";
 
 const wallpaper = require("../assets/images/wallpaper.png");
-const userlogo = require("../assets/images/userlogo.png");
 
-export const RegistrationScreen = () => {
-  const [name, setName] = useState("");
+export const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
+  const [showPassword, setshowPassword] = useState(true);
   const [keyboardStatus, setKeyboardStatus] = useState(false);
 
   useEffect(() => {
@@ -49,8 +45,8 @@ export const RegistrationScreen = () => {
     setIsFocused("");
   };
 
-  const handleRegisterSubmit = () => {
-    console.log({ name, email, password });
+  const handleLoginSubmit = () => {
+    console.log("Login screen:", { email, password });
   };
 
   return (
@@ -62,44 +58,9 @@ export const RegistrationScreen = () => {
             style={{ flex: 1, justifyContent: "flex-end" }}
           >
             <View
-              style={{ ...styles.form, height: keyboardStatus ? 360 : 550 }}
+              style={{ ...styles.form, height: keyboardStatus ? 260 : 450 }}
             >
-              <View style={styles.avatarWrap}>
-                <Image
-                  source={userlogo}
-                  style={styles.avatar}
-                  alt="User photo"
-                />
-
-                <TouchableOpacity style={styles.btnAdd}>
-                  <AntDesign
-                    name="pluscircleo"
-                    size={25}
-                    color={"#FF6C00"}
-                    onPress={() => {}}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <Text style={styles.formTitle}>Реєстрація</Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    borderColor:
-                      isFocused === "username" ? "#FF6C00" : "#E8E8E8",
-                  },
-                ]}
-                placeholderTextColor={"#BDBDBD"}
-                placeholder="Логін"
-                value={name}
-                textContentType="username"
-                autoCompleteType="off"
-                onBlur={handleBlur}
-                onFocus={() => handleFocus("username")}
-                onChangeText={(value) => setName(value)}
-              />
-
+              <Text style={styles.formTitle}>Увійти</Text>
               <TextInput
                 style={[
                   styles.input,
@@ -112,10 +73,10 @@ export const RegistrationScreen = () => {
                 placeholder="Адреса електронної пошти"
                 value={email}
                 textContentType="emailAddress"
-                autoCompleteType="off"
+                autoCompleteType="email"
                 onBlur={handleBlur}
                 onFocus={() => handleFocus("emailAddress")}
-                onChangeText={(value) => setEmail(value)}
+                onChangeText={setEmail}
               />
 
               <View style={(position = "relative")}>
@@ -136,27 +97,27 @@ export const RegistrationScreen = () => {
                   secureTextEntry={showPassword}
                   onBlur={handleBlur}
                   onFocus={() => handleFocus("password")}
-                  onChangeText={(value) => setPassword(value)}
+                  onChangeText={setPassword}
                 />
                 {password && (
                   <TouchableOpacity
                     style={styles.btnShowPassword}
-                    onPress={() => setShowPassword(!showPassword)}
+                    onPress={() => setshowPassword(!showPassword)}
                   >
                     <Text style={styles.btnShowPasswordText}>
-                      {showPassword ? "Показати" : "Приховати"}
+                      {setPassword ? "Показати" : "Приховати"}
                     </Text>
                   </TouchableOpacity>
                 )}
               </View>
               <Button
-                text="Зареєстуватися"
-                onPress={() => handleRegisterSubmit()}
+                text="Увійти"
+                onPress={() => handleLoginSubmit(email, password)}
               />
               <AuthTextLink
-                text="Вже є акаунт?"
-                linkText="Увійти"
-                onPress={() => navigation.navigate("Login")}
+                text="Немає акаунту?"
+                linkText="Зареєструватися"
+                onPress={() => navigation.navigate("Registration")}
               />
             </View>
           </KeyboardAvoidingView>
@@ -180,28 +141,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  avatarWrap: {
-    position: "absolute",
-    top: -60,
-    left: "50%",
-    transform: [{ translateX: -50 }],
-    width: 120,
-    height: 120,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-  },
-  btnAdd: {
-    position: "absolute",
-    top: 75,
-    right: -12,
-    width: 25,
-    height: 25,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
-  },
   form: {
     position: "relative",
-    paddingTop: 92,
+    paddingTop: 32,
     paddingBottom: 40,
     paddingHorizontal: 16,
     borderTopStartRadius: 25,
