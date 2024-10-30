@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+
 import {
   StyleSheet,
   Text,
@@ -17,12 +19,13 @@ import AuthTextLink from "../components/AuthTextLink";
 
 const wallpaper = require("../assets/images/wallpaper.png");
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setshowPassword] = useState(true);
   const [keyboardStatus, setKeyboardStatus] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -47,6 +50,7 @@ export const LoginScreen = () => {
 
   const handleLoginSubmit = () => {
     console.log("Login screen:", { email, password });
+    onLogin(true);
   };
 
   return (
