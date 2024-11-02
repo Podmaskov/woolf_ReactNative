@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, Text } from "react-native";
-import { RegistrationScreen } from "./screens/RegistrationScreen";
 import { LoginScreen } from "./screens/LoginScreen";
+import { Navigation } from "./router/Navigation";
 import * as Font from "expo-font";
 
 export default function App() {
@@ -20,5 +19,5 @@ export default function App() {
     })();
   }, []);
 
-  return <LoginScreen />;
+  return <Navigation />;
 }
