@@ -1,132 +1,140 @@
-import React, { useState } from "react";
 import {
-  Dimensions,
   StyleSheet,
-  Text,
   View,
-  Image,
-  TouchableOpacity,
-  FlatList,
+  Text,
   ImageBackground,
+  Image,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
-import { Feather, AntDesign } from "@expo/vector-icons";
+import Posts from "../components/Posts";
+import { Colors, Fonts } from "../styles/global";
 
-import wallpaper from "../assets/images/wallpaper.png";
-import userlogo from "../assets/images/userlogo.png";
+import ImageBG from "../assets/images/PhotoBG.jpg";
+import AddAvatar from "../assets/images/add.png";
+import Avatar from "../assets/images/Avatar.jpg";
+import LogOutButton from "../components/LogOutButton";
 
-import PostProfileItem from "../components/PostProfileItem";
+const POSTS = [
+  {
+    id: "1",
+    postImg: "",
+    postName: "Ліс",
+    postComment: 5,
+    location: "Ivano-Frankivs'k, Ukraine",
+    postLike: "5",
+  },
+  {
+    id: "2",
+    postImg: "",
+    postName: "Захід на Чорному морі",
+    postComment: 3,
+    location: "Ukraine",
+    postLike: "0",
+  },
+  {
+    id: "3",
+    postImg: "",
+    postName: "Старий будиночок у Венеції",
+    postComment: 0,
+    location: "Itally",
+    postLike: "3",
+  },
+];
 
-export default function ProfileScreen() {
-  const [userPosts, setUserPosts] = useState([]);
-
+const ProfileScreen = ({ navigation }) => {
   return (
-    <ImageBackground source={wallpaper} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <Feather
-          name="log-out"
-          size={24}
-          color={"#BDBDBD"}
-          style={{ position: "absolute", top: 22, right: 16 }}
-          onPress={() => {}}
-        />
-        <View style={styles.avatarWrap}>
-          <Image source={userlogo} style={styles.avatar} alt="User photo" />
-          <TouchableOpacity style={styles.btnAdd}>
-            <AntDesign name="pluscircleo" size={25} color={"#FF6C00"} />
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.title}>{"name"}</Text>
-
-        {userPosts.length !== 0 ? (
-          <FlatList
-            data={userPosts}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <PostProfileItem
-                id={item.id}
-                title={item.title}
-                photoLocation={item.photoLocation}
-                url={item.photo}
-                geoLocation={item.geoLocation}
-              />
-            )}
-          />
-        ) : (
-          <View style={{ flex: 1, marginTop: 30, paddingHorizontal: 16 }}>
-            <Text style={styles.text}>Ще немає публікацій</Text>
+    <View style={styles.container}>
+      <ImageBackground source={ImageBG} style={styles.imageBg}>
+        <View style={styles.contentBox}>
+          <View>
+            <Image style={styles.avatarBox} source={Avatar} />
+            <TouchableOpacity style={styles.avatarAdd}>
+              <Image source={AddAvatar} />
+            </TouchableOpacity>
           </View>
-        )}
-      </View>
-    </ImageBackground>
+
+          <View style={styles.exitBtn}>
+            <LogOutButton onPress={() => console.log("LogOut")} />
+          </View>
+
+          <Text style={styles.contentTitle}>Natali Romanova</Text>
+
+          <View style={styles.fotoList}>
+            <FlatList
+              data={POSTS}
+              renderItem={({ item }) => (
+                <Posts
+                  onPressComment={() => navigation.navigate("Comment")}
+                  onPressMap={() =>
+                    navigation.navigate("Maps", { location: item.location })
+                  }
+                  postImg={item.postImg}
+                  postName={item.postName}
+                  postComment={item.postComment}
+                  location={item.location}
+                  postLike={item.postLike}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        </View>
+      </ImageBackground>
+    </View>
   );
-}
+};
+
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  backgroundImage: {
+  container: {
     flex: 1,
-    resizeMode: "cover",
+  },
+  imageBg: {
     width: "100%",
     height: "100%",
   },
-  container: {
-    position: "relative",
-    paddingTop: 92,
-    paddingBottom: 115,
-    paddingHorizontal: 16,
+  contentBox: {
+    width: "100%",
+    height: 665,
+    backgroundColor: Colors.whites,
+    marginTop: "auto",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    backgroundColor: "#FFFFFF",
-    marginTop: 147,
-    minHeight: Dimensions.get("window").height - 147,
-  },
-  avatarWrap: {
-    position: "absolute",
-    top: -60,
-    left: "50%",
-    transform: [{ translateX: -50 }],
-    width: 120,
-    height: 120,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-  },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 16,
-  },
-  cameraBtnPos: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-  },
-  cameraBtn: {
-    width: 35,
-    height: 35,
-    backgroundColor: "#FFFFFF",
-    opacity: 0.8,
-    borderRadius: 35,
-    justifyContent: "center",
     alignItems: "center",
+    paddingLeft: 16,
+    paddingRight: 16,
   },
-  btnAdd: {
+  avatarBox: {
+    width: 120,
+    height: 120,
+    backgroundColor: Colors.light_gray,
+    borderRadius: 16,
+    position: "relative",
+    top: -60,
+  },
+  avatarAdd: {
     position: "absolute",
-    top: 75,
-    right: -12,
-    width: 25,
-    height: 25,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 50,
+    left: 107,
+    top: 20,
   },
-  title: {
-    fontFamily: "Roboto-Medium",
-    color: "#212121",
-    fontSize: 30,
-    textAlign: "center",
+  exitBtn: {
+    position: "absolute",
+    right: 10,
+    top: 20,
   },
-  text: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    textAlign: "center",
+  exitBtnIcon: {
+    width: 24,
+    height: 30,
+  },
+  contentTitle: {
+    fontFamily: "roboto-medium",
+    fontSize: Fonts.extraLarge,
+    top: -30,
+  },
+  fotoList: {
+    width: "100%",
+    height: 500,
   },
 });

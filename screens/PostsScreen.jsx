@@ -1,89 +1,139 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  FlatList,
-  Dimensions,
-  RefreshControl,
-} from "react-native";
+import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import { Colors, Fonts } from "../styles/global";
+import Posts from "../components/Posts";
+import post1 from "../assets/images/post1.jpg";
+import post2 from "../assets/images/post2.jpg";
+import post3 from "../assets/images/post3.jpg";
 
-import PostItem from "../components/PostItem";
-import userlogo from "../assets/images/userlogo.png";
+const POSTS = [
+  {
+    id: 1,
+    postImg: post1,
+    postName: "Ліс",
+    postComment: 5,
+    location: "Ivano-Frankivs'k, Ukraine",
+    postLike: "5",
+  },
+  {
+    id: 2,
+    postImg: post2,
+    postName: "Захід на Чорному морі",
+    postComment: 3,
+    location: "Ukraine",
+    postLike: "0",
+  },
+  {
+    id: 3,
+    postImg: post3,
+    postName: "Старий будиночок у Венеції",
+    postComment: 0,
+    location: "Itally",
+    postLike: "3",
+  },
+];
 
-export default function PostsScreen() {
-  const [posts, setPosts] = useState([]);
+const PostsScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>
-        <Image style={styles.avatar} source={userlogo} alt="User photo" />
-        <View style={styles.userData}>
-          <Text style={styles.userName}>"name"</Text>
-          <Text style={styles.userEmail}>"email"</Text>
+        <Image
+          style={styles.userAvatar}
+          source={require("../assets/images/User.png")}
+        />
+        <View>
+          <Text style={styles.userName}>Natali Romanova</Text>
+          <Text style={styles.userEmail}>email@example.com</Text>
         </View>
       </View>
-      {posts.length !== 0 && (
+
+      <View style={styles.fotoList}>
         <FlatList
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          data={posts}
-          keyExtractor={(item) => item.id}
+          data={POSTS}
           renderItem={({ item }) => (
-            <PostItem
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              photoLocation={item.photoLocation}
-              url={item.photo}
-              geoLocation={item.geoLocation}
+            <Posts
+              onPressComment={() => navigation.navigate("Comment")}
+              onPressMap={() =>
+                navigation.navigate("Maps", { location: item.location })
+              }
+              postImg={item.postImg}
+              postName={item.postName}
+              postComment={item.postComment}
+              location={item.location}
             />
           )}
-          contentContainerStyle={styles.contentContainer}
+          keyExtractor={(item) => item.id}
         />
-      )}
+      </View>
     </View>
   );
-}
+};
+
+export default PostsScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 15,
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 0.5,
-    borderBottomWidth: -0.5,
-    borderTopColor: "rgba(0, 0, 0, 0.30)",
-    borderBottomColor: "rgba(0, 0, 0, 0.30)",
-    minHeight: Dimensions.get("window").height - 150,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 32,
+    backgroundColor: "#fff",
+    borderColor: "#E5E5E5",
+    borderWidth: 1,
   },
   userInfo: {
     flexDirection: "row",
-    gap: 8,
-    paddingBottom: 15,
+    marginBottom: 32,
+    alignItems: "center",
   },
-  avatar: {
+  userAvatar: {
     width: 60,
     height: 60,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-  },
-  userData: {
-    flexDirection: "column",
-    justifyContent: "center",
+    marginRight: 8,
   },
   userName: {
-    fontFamily: "Roboto-Bold",
-    color: "#212121",
-    fontSize: 13,
+    fontFamily: "roboto-bold",
+    fontSize: Fonts.medium,
+    color: Colors.black_primary,
   },
   userEmail: {
-    fontFamily: "Roboto-Regular",
-    color: "#212121",
-    fontSize: 11,
+    fontFamily: "roboto-regular",
+    fontSize: Fonts.small,
+    color: Colors.black_primary,
   },
-  contentContainer: {},
+  fotoList: {
+    width: "100%",
+    height: "87%",
+  },
+  itemImg: {
+    width: "100%",
+    height: 240,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  itemName: {
+    fontFamily: "roboto-medium",
+    fontSize: Fonts.normal,
+    color: Colors.black_primary,
+    marginBottom: 8,
+  },
+  itemInform: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  itemArea: {
+    flexDirection: "row",
+  },
+  itemCommentNum: {
+    fontFamily: "roboto-medium",
+    fontSize: Fonts.normal,
+    color: Colors.text_gray,
+    marginLeft: 5,
+  },
+  itemAddres: {
+    fontFamily: "roboto-medium",
+    fontSize: Fonts.normal,
+    color: Colors.black_primary,
+    marginLeft: 5,
+    textDecorationLine: "underline",
+  },
 });
