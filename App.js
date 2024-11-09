@@ -1,23 +1,32 @@
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { LoginScreen } from "./screens/LoginScreen";
-import { Navigation } from "./router/Navigation";
-import * as Font from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
+import { ActivityIndicator } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import StackNavigator from "./router/StackNavigator";
 
 export default function App() {
-  useEffect(() => {
-    (async function () {
-      try {
-        await Font.loadAsync({
-          "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
-          "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
-          "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
-        });
-      } catch (error) {
-        console.warn("Font Error:", error);
-      }
-    })();
-  }, []);
+  const [loaded, error] = useFonts({
+    "roboto-bold": require("./assets/fonts/Roboto-Bold.ttf"),
+    "roboto-medium": require("./assets/fonts/Roboto-Medium.ttf"),
+    "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf"),
+  });
 
-  return <Navigation />;
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  });
+
+  if (!loaded || error) {
+    return <ActivityIndicator />;
+  }
+
+  return (
+    <NavigationContainer>
+      <StatusBar style="auto" />
+      <StackNavigator />
+    </NavigationContainer>
+  );
 }
