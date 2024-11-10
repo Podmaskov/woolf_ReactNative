@@ -1,68 +1,76 @@
-import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+} from "react-native";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Colors, Fonts } from "../styles/global";
 import Posts from "../components/Posts";
-import post1 from "../assets/images/post1.jpg";
-import post2 from "../assets/images/post2.jpg";
-import post3 from "../assets/images/post3.jpg";
-
-const POSTS = [
-  {
-    id: 1,
-    postImg: post1,
-    postName: "Ліс",
-    postComment: 5,
-    location: "Ivano-Frankivs'k, Ukraine",
-    postLike: "5",
-  },
-  {
-    id: 2,
-    postImg: post2,
-    postName: "Захід на Чорному морі",
-    postComment: 3,
-    location: "Ukraine",
-    postLike: "0",
-  },
-  {
-    id: 3,
-    postImg: post3,
-    postName: "Старий будиночок у Венеції",
-    postComment: 0,
-    location: "Itally",
-    postLike: "3",
-  },
-];
+import {
+  selectAllPosts,
+  selectIsLoading,
+} from "../redux/reducers/postSelector";
+import { getPosts, toggleLike } from "../redux/reducers/postOperation";
+import { selectUser } from "../redux/reducers/authSelector";
 
 const PostsScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const posts = useSelector(selectAllPosts);
+  const user = useSelector(selectUser);
+  const isLoading = useSelector(selectIsLoading);
+  const userId = user.uid;
+
+  useEffect(() => {
+    dispatch(getPosts());
+  }, []);
+
+  const handleLikeToggle = (postId) => {
+    dispatch(toggleLike({ postId, userId }));
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>
-        <Image
-          style={styles.userAvatar}
-          source={require("../assets/images/User.png")}
-        />
+        <Image style={styles.userAvatar} source={{ uri: user.photoURL }} />
         <View>
-          <Text style={styles.userName}>Natali Romanova</Text>
-          <Text style={styles.userEmail}>email@example.com</Text>
+          <Text style={styles.userName}>{user.displayName}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
         </View>
       </View>
 
       <View style={styles.fotoList}>
-        <FlatList
-          data={POSTS}
-          renderItem={({ item }) => (
-            <Posts
-              onPressComment={() => navigation.navigate("Comment")}
-              onPressMap={() =>
-                navigation.navigate("Maps", { location: item.location })
-              }
-              postImg={item.postImg}
-              postName={item.postName}
-              postComment={item.postComment}
-              location={item.location}
-            />
-          )}
-          keyExtractor={(item) => item.id}
-        />
+        {isLoading && (
+          <ActivityIndicator
+            size="150"
+            style={styles.loaders}
+            color={Colors.oranges}
+          />
+        )}
+        {!isLoading > 0 && (
+          <FlatList
+            data={posts}
+            renderItem={({ item }) => (
+              <Posts
+                onPressComment={() =>
+                  navigation.navigate("Comment", { postId: item.id })
+                }
+                onPressLike={() => handleLikeToggle(item.id)}
+                onPressMap={() => navigation.navigate("Maps", { posts })}
+                postImg={item.imageUrl}
+                postName={item.namePhoto}
+                postComment={item.comments.length}
+                location={item.location.name}
+                postLike={item.likes}
+                isLiked={item.likedBy && item.likedBy.includes(userId)}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        )}
       </View>
     </View>
   );
@@ -76,19 +84,23 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
     paddingTop: 32,
-    backgroundColor: "#fff",
-    borderColor: "#E5E5E5",
+    backgroundColor: Colors.whites,
+    borderColor: Colors.light_gray,
     borderWidth: 1,
+  },
+  loaders: {
+    marginTop: "50%",
   },
   userInfo: {
     flexDirection: "row",
-    marginBottom: 32,
+    marginBottom: 25,
     alignItems: "center",
   },
   userAvatar: {
     width: 60,
     height: 60,
     marginRight: 8,
+    borderRadius: 8,
   },
   userName: {
     fontFamily: "roboto-bold",
@@ -98,7 +110,7 @@ const styles = StyleSheet.create({
   userEmail: {
     fontFamily: "roboto-regular",
     fontSize: Fonts.small,
-    color: Colors.black_primary,
+    color: Colors.oranges,
   },
   fotoList: {
     width: "100%",
@@ -135,5 +147,13 @@ const styles = StyleSheet.create({
     color: Colors.black_primary,
     marginLeft: 5,
     textDecorationLine: "underline",
+  },
+  errors: {
+    fontSize: 30,
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    overflow: "hidden",
+    color: "#e44848",
   },
 });
