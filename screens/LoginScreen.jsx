@@ -16,8 +16,15 @@ import Buttons from "../components/Buttons";
 import Inputs from "../components/InputsSing";
 import ImageBG from "../assets/images/PhotoBG.jpg";
 import { Colors, Fonts } from "../styles/global";
+import { loginDB } from "../redux/reducers/authOperation";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAuthError } from "../redux/reducers/authSelector";
+import Toast from "react-native-toast-message";
 
-const LoginScreen = ({ navigation, route }) => {
+const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const errorMessage = useSelector(selectAuthError);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -49,17 +56,38 @@ const LoginScreen = ({ navigation, route }) => {
   };
 
   const signIn = () => {
-    reset();
-    navigation.navigate("Home");
+    if (email && password) {
+      dispatch(
+        loginDB({
+          inputEmail: email,
+          inputPassword: password,
+        })
+      ).then((response) => {
+        if (response.type === "auth/login/fulfilled") {
+          Toast.show({
+            type: "success",
+            text1: `${email}`,
+            text2: "Ви успішно увійшли!",
+          });
+          reset();
+        } else {
+          return Toast.show({
+            type: "error",
+            text1: "Щось пішло не так.",
+            text2: `${errorMessage}`,
+          });
+        }
+      });
+    }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-        >
-          <ImageBackground source={ImageBG} style={styles.imageBg}>
+        <ImageBackground source={ImageBG} style={styles.imageBg}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
+          >
             <View style={styles.contentBox}>
               <Text style={styles.contentTitle}>Увійти</Text>
 
@@ -106,8 +134,8 @@ const LoginScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
               </View>
             </View>
-          </ImageBackground>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </ImageBackground>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -122,10 +150,11 @@ const styles = StyleSheet.create({
   imageBg: {
     width: "100%",
     height: "100%",
+    justifyContent: "flex-end",
   },
   contentBox: {
     width: "100%",
-    height: 489,
+    height: "75%",
     backgroundColor: Colors.whites,
     marginTop: "auto",
     borderTopLeftRadius: 25,
